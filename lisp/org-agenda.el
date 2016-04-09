@@ -9819,7 +9819,7 @@ This will remove the markers and the overlays."
   (interactive)
   (if (null org-agenda-bulk-marked-entries)
       (message "No entry to unmark")
-    (mapc (lambda (m) (move-marker m nil)) org-agenda-bulk-marked-entries)
+    ;; (mapc (lambda (m) (move-marker m nil)) org-agenda-bulk-marked-entries)
     (setq org-agenda-bulk-marked-entries nil)
     (org-agenda-bulk-remove-overlays (point-min) (point-max))))
 
