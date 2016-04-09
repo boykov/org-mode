@@ -1859,7 +1859,7 @@ PROPNAME lets you set a custom text property instead of :org-clock-minutes."
 	     (setq level (- (match-end 1) (match-beginning 1)))
 	     (when (>= level lmax)
 	       (setq ltimes (vconcat ltimes (make-vector lmax 0)) lmax (* 2 lmax)))
-	     (when (or (> t1 0) (> (aref ltimes level) 0))
+	     (when (or (>= t1 0) (> (aref ltimes level) 0))
 	       (when (or headline-included headline-forced)
 		 (if headline-included
 		     (loop for l from 0 to level do
@@ -1873,7 +1873,8 @@ PROPNAME lets you set a custom text property instead of :org-clock-minutes."
 		       (save-match-data
 			 (while
 			     (> (funcall outline-level) 1)
-			   (outline-up-heading 1 t)
+			   (if (not (org-up-heading-safe))
+			       (beginning-of-buffer))
 			   (put-text-property
 			    (point) (point-at-eol)
 			    :org-clock-force-headline-inclusion t))))))
@@ -2794,7 +2795,9 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	 (properties (plist-get params :properties))
 	 (inherit-property-p (plist-get params :inherit-props))
 	 todo-only
-	 (matcher (if tags (cdr (org-make-tags-matcher tags))))
+	 (matcher (if tags (cdr (org-make-tags-matcher
+				 (if (and (listp tags) (symbolp (car tags)))
+				     (eval tags) tags)))))
 	 cc range-text st p time level hdl props tsp tbl)
 
     (setq org-clock-file-total-minutes nil)
@@ -2836,10 +2839,8 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 	      (setq hdl (if (not link)
 			    (match-string 2)
 			  (org-make-link-string
-			   (format "file:%s::%s"
-				   (buffer-file-name)
-				   (save-match-data
-				     (match-string 2)))
+			   (format "id:%s"
+				   (save-match-data (org-id-get-create)))
 			   (org-make-org-heading-search-string
 			    (replace-regexp-in-string
 			     org-bracket-link-regexp
@@ -2859,7 +2860,7 @@ TIME:      The sum of all time spend in this tree, in minutes.  This time
 				       (when (org-entry-get (point) p inherit-property-p)
 					 (cons p (org-entry-get (point) p inherit-property-p))))
 				     properties))))
-	      (when (> time 0) (push (list level hdl tsp time props) tbl))))))
+	      (when (>= time 0) (push (list level hdl tsp time props) tbl))))))
       (setq tbl (nreverse tbl))
       (list file org-clock-file-total-minutes tbl))))
 
@@ -2869,21 +2870,23 @@ TOTAL s a time string like 10:21 specifying the total times.
 STRINGS is a list of strings that should be checked for a time.
 The first string that does have a time will be used.
 This function is made for clock tables."
-  (let ((re "\\([0-9]+\\):\\([0-9]+\\)")
+  (let ((re "\\([0-9]*?\\)\\(?:d \\)*\\([0-9]+\\):\\([0-9]+\\)")
 	tot s)
     (save-match-data
       (catch 'exit
 	(if (not (string-match re total))
 	    (throw 'exit 0.)
-	  (setq tot (+ (string-to-number (match-string 2 total))
-		       (* 60 (string-to-number (match-string 1 total)))))
+	  (setq tot (+ (string-to-number (match-string 3 total))
+		       (* 60 (string-to-number (match-string 2 total)))
+		       (* (string-to-number (match-string 1 total)) 24 60)))
 	  (if (= tot 0.) (throw 'exit 0.)))
 	(while (setq s (pop strings))
-	  (if (string-match "\\([0-9]+\\):\\([0-9]+\\)" s)
+	  (if (string-match re s)
 	      (throw 'exit
-		     (/ (* 100.0 (+ (string-to-number (match-string 2 s))
+		     (/ (* 100.0 (+ (string-to-number (match-string 3 s))
 				    (* 60 (string-to-number
-					   (match-string 1 s)))))
+					   (match-string 2 s)))
+				    (* (string-to-number (match-string 1 s)) 24 60)))
 			tot))))
 	0))))
 

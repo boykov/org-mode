@@ -11417,7 +11417,7 @@ If the file does not exist, an error is thrown."
 
       (save-window-excursion
 	(message "Running %s...done" cmd)
-	(start-process-shell-command cmd nil cmd)
+	(call-process-shell-command cmd nil cmd)
 	(and (boundp 'org-wait) (numberp org-wait) (sit-for org-wait))))
      ((or (stringp cmd)
 	  (eq cmd 'emacs))

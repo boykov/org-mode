@@ -2924,7 +2924,7 @@ INFO is a plist holding contextual information.  See
 		    (or desc
 			(org-export-data
 			 (org-element-property :title destination) info)))))
-	     (format "<a href=\"#%s\"%s>%s</a>" href attributes desc)))
+	     (format "<a href=\"#%s\"%s>%s</a>" (concat "ID-" path) attributes desc)))
 	  ;; Fuzzy link points to a target or an element.
 	  (t
 	   (let* ((ref (org-export-get-reference destination info))
