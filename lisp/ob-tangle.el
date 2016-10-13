@@ -565,7 +565,7 @@ which enable the original code blocks to be found."
 			      (setq end (point-at-bol))))))))
 	(unless (and start (< start mid) (< mid end))
 	  (error "Not in tangled code"))
-        (setq body (org-babel-trim (buffer-substring start end))))
+        (setq body (buffer-substring start end)))
       (when (string-match "::" path)
         (setq path (substring path 0 (match-beginning 0))))
       (find-file path) (setq target-buffer (current-buffer))
@@ -581,7 +581,7 @@ which enable the original code blocks to be found."
       (org-edit-special)
       ;; Then move forward the correct number of characters in the
       ;; code buffer.
-      (forward-char (- mid body-start))
+      ;; (forward-char (- mid body-start))
       ;; And return to the Org-mode buffer with the point in the right
       ;; place.
       (org-edit-src-exit)

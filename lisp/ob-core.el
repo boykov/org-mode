@@ -2484,9 +2484,7 @@ file's directory then expand relative links."
   (if (not (org-babel-where-is-src-block-head))
       (error "Not in a source block")
     (save-match-data
-      (replace-match (concat (org-babel-trim (org-remove-indentation new-body))
-			     "\n") nil t nil 5))
-    (indent-rigidly (match-beginning 5) (match-end 5) 2)))
+      (replace-match (replace-regexp-in-string "cUs123st\n" "" (concat "cUs123st" new-body)) nil t nil 5))))
 
 (defun org-babel-merge-params (&rest plists)
   "Combine all parameter association lists in PLISTS.
