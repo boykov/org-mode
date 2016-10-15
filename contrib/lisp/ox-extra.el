@@ -153,8 +153,8 @@ parent."
   data)
 
 (defun org-export-notignore-headlines (data backend info)
-  "Remove headlines tagged \"ignore\" retaining contents and promoting children.
-Each headline tagged \"ignore\" will be removed retaining its
+  "Remove headlines not tagged \"notignore\" retaining contents and promoting children.
+Each headline tagged \"notignore\" will not be removed retaining its
 contents and promoting any children headlines to the level of the
 parent."
   (org-element-map data 'headline
@@ -182,7 +182,7 @@ parent."
 
 (defconst ox-extras
   '((latex-header-blocks org-latex-header-blocks-filter org-export-before-parsing-hook)
-    (ignore-headlines org-export-ignore-headlines org-export-filter-parse-tree-functions))
+    (ignore-headlines org-export-ignore-headlines org-export-filter-parse-tree-functions)
     (notignore-headlines org-export-notignore-headlines org-export-filter-parse-tree-functions))
   "A list of org export extras that can be enabled.
 
