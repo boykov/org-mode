@@ -152,9 +152,38 @@ parent."
     info nil)
   data)
 
+(defun org-export-notignore-headlines (data backend info)
+  "Remove headlines tagged \"ignore\" retaining contents and promoting children.
+Each headline tagged \"ignore\" will be removed retaining its
+contents and promoting any children headlines to the level of the
+parent."
+  (org-element-map data 'headline
+    (lambda (object)
+      (when (not (member "notignore" (org-element-property :tags object)))
+        (let ((level-top (org-element-property :level object))
+              level-diff)
+          (mapc (lambda (el)
+                  ;; recursively promote all nested headlines
+                  (org-element-map el 'headline
+                    (lambda (el)
+                      (when (equal 'headline (org-element-type el))
+                        (unless level-diff
+                          (setq level-diff (- (org-element-property :level el)
+                                              level-top)))
+                        (org-element-put-property el
+                          :level (- (org-element-property :level el)
+                                    level-diff)))))
+                  ;; insert back into parse tree
+                  (org-element-insert-before el object))
+                (org-element-contents object)))
+        (org-element-extract-element object)))
+    info nil)
+  data)
+
 (defconst ox-extras
   '((latex-header-blocks org-latex-header-blocks-filter org-export-before-parsing-hook)
     (ignore-headlines org-export-ignore-headlines org-export-filter-parse-tree-functions))
+    (notignore-headlines org-export-notignore-headlines org-export-filter-parse-tree-functions))
   "A list of org export extras that can be enabled.
 
 Should be a list of items of the form (NAME FN HOOK).  NAME is a
