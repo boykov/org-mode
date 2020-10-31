@@ -103,7 +103,7 @@
          (gitdir (first dirlist))
          (relpath (second dirlist)))
     (org-git-open-file-internal gitdir (concat commit ":" relpath))
-    (when line (goto-line (string-to-int line)))))
+    (when line (goto-line (string-to-number line)))))
 
 
 ;; Utility functions (file names etc)
