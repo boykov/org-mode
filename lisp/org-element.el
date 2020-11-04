@@ -5011,8 +5011,8 @@ Properties are modified by side-effect."
 	       (not (eq (org-element-type (plist-get properties :parent))
 			'item)))
       (dolist (item (plist-get properties :structure))
-	(incf (car item) offset)
-	(incf (nth 6 item) offset)))
+	(cl-incf (car item) offset)
+	(cl-incf (nth 6 item) offset)))
     (dolist (key '(:begin :contents-begin :contents-end :end :post-affiliated))
       (let ((value (and (or (not props) (memq key props))
 			(plist-get properties key))))
@@ -5051,7 +5051,7 @@ updated before current modification are actually submitted."
 	    ;; Request processed.  Merge current and next offsets and
 	    ;; transfer ending position.
 	    (when next
-	      (incf (aref next 3) (aref request 3))
+	      (cl-incf (aref next 3) (aref request 3))
 	      (aset next 2 (aref request 2)))
 	    (setq org-element--cache-sync-requests
 		  (cdr org-element--cache-sync-requests))))
@@ -5527,7 +5527,7 @@ change, as an integer."
 	;; Current changes can be merged with first sync request: we
 	;; can save a partial cache synchronization.
 	(progn
-	  (incf (aref next 3) offset)
+	  (cl-incf (aref next 3) offset)
 	  ;; If last change happened within area to be removed, extend
 	  ;; boundaries of robust parents, if any.  Otherwise, find
 	  ;; first element to remove and update request accordingly.
@@ -5577,7 +5577,7 @@ change, as an integer."
 	  ;; No element to remove.  No need to re-parent either.
 	  ;; Simply shift additional elements, if any, by OFFSET.
 	  (when org-element--cache-sync-requests
-	    (incf (aref (car org-element--cache-sync-requests) 3) offset)))))))
+	    (cl-incf (aref (car org-element--cache-sync-requests) 3) offset)))))))
 
 
 ;;;; Public Functions
