@@ -18004,7 +18004,9 @@ When SUPPRESS-TMP-DELAY is non-nil, suppress delays like \"--2d\"."
 			 (+ (if (eq org-ts-what 'day) n 0)    (nth 3 time0))
 			 (+ (if (eq org-ts-what 'month) n 0)  (nth 4 time0))
 			 (+ (if (eq org-ts-what 'year) n 0)   (nth 5 time0))
-			 (nthcdr 6 time0)))
+			 (car (nthcdr 6 time0))
+			 (cadr (nthcdr 6 time0))
+			 (caddr (nthcdr 6 time0))))
       (when (and (member org-ts-what '(hour minute))
 		 extra
 		 (string-match "-\\([012][0-9]\\):\\([0-5][0-9]\\)" extra))
